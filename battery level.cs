@@ -42,23 +42,20 @@ namespace GameOverlayApp
             this.TopMost = true;
             this.ShowInTaskbar = false;
 
-            // System tray icon setup
             trayIcon = new NotifyIcon();
             trayIcon.Text = "Game Overlay App";
             trayIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
             trayIcon.Visible = true;
 
-            // Add a context menu to the tray icon for exit
             trayIcon.ContextMenuStrip = new ContextMenuStrip();
             trayIcon.ContextMenuStrip.Items.Add("Exit", null, OnExitClicked);
 
             systemInfoLabel = new Label();
             systemInfoLabel.ForeColor = Color.White;
             systemInfoLabel.AutoSize = true;
-            systemInfoLabel.Font = new Font(systemInfoLabel.Font.FontFamily, systemInfoLabel.Font.Size * 2); // Double the font size
+            systemInfoLabel.Font = new Font(systemInfoLabel.Font.FontFamily, systemInfoLabel.Font.Size * 2); 
             this.Controls.Add(systemInfoLabel);
 
-            // Make the form click-through
             int initialStyle = GetWindowLong(this.Handle, GWL_EXSTYLE);
             SetWindowLong(this.Handle, GWL_EXSTYLE, initialStyle | WS_EX_TRANSPARENT | WS_EX_LAYERED);
 
@@ -80,14 +77,14 @@ namespace GameOverlayApp
 
         private void GlobalHookKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.L && e.Modifiers == Keys.LWin) // or e.Modifiers == Keys.RWin for right Windows key
+            if (e.KeyCode == Keys.L && e.Modifiers == Keys.LWin) 
             {
                 if (this.Visible)
                     this.Hide();
                 else
                     this.Show();
 
-                e.Handled = true; // This will prevent the workstation from getting locked.
+                e.Handled = true; 
             }
         }
 
@@ -108,12 +105,11 @@ namespace GameOverlayApp
 
         private string GetSystemInfo()
         {
-            // Get current time in 12-hour format without seconds and with AM/PM
+
             string time = DateTime.Now.ToString("hh:mm tt");
 
             string batteryStatus = SystemInformation.PowerStatus.BatteryLifePercent.ToString("P0");
             
-            // Check if the device is charging
             if (SystemInformation.PowerStatus.BatteryChargeStatus.HasFlag(BatteryChargeStatus.Charging))
             {
                 return String.Format("{0} | Battery: {1} (Charging)", time, batteryStatus);
@@ -121,8 +117,8 @@ namespace GameOverlayApp
             else
             {
                 int batteryLifeInSeconds = SystemInformation.PowerStatus.BatteryLifeRemaining;
-                int batteryHours = batteryLifeInSeconds / 3600; // Convert seconds to hours
-                int batteryMinutes = (batteryLifeInSeconds % 3600) / 60; // Get the remaining minutes
+                int batteryHours = batteryLifeInSeconds / 3600; 
+                int batteryMinutes = (batteryLifeInSeconds % 3600) / 60; 
 
                 return String.Format("{0} | Battery: {1} ({2} hrs {3} mins left)", time, batteryStatus, batteryHours, batteryMinutes);
             }
@@ -131,7 +127,7 @@ namespace GameOverlayApp
         private void UpdateOverlaySizeAndPosition()
         {
             Size textSize = TextRenderer.MeasureText(systemInfoLabel.Text, systemInfoLabel.Font);
-            this.Size = textSize + new Size(10, 5);  // Add a small margin
+            this.Size = textSize + new Size(10, 5); 
             this.Location = new Point(10, 10);
         }
 
@@ -141,7 +137,6 @@ namespace GameOverlayApp
             e.Graphics.FillRectangle(new SolidBrush(Color.Black), this.ClientRectangle);
         }
 
-        // Ensure that the system tray icon and global hook are disposed when the application is closed.
         protected override void OnClosed(EventArgs e)
         {
             trayIcon.Dispose();
